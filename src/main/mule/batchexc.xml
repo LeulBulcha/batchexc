@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:jms="http://www.mulesoft.org/schema/mule/jms"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/jms http://www.mulesoft.org/schema/mule/jms/current/mule-jms.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="f2296004-1c20-4012-8167-6d9487226ddf" >
+		<http:listener-connection host="0.0.0.0" port="8082" />
+	</http:listener-config>
+	<flow name="batchexcFlow" doc:id="22a5d91d-e11a-4556-b335-b66a2716a0fa" >
+		<http:listener doc:name="Listener" doc:id="d6d9f7c7-4f6e-41d6-917b-f566e1a070fc" config-ref="HTTP_Listener_config" path="/batch"/>
+		<logger level="INFO" doc:name="Logger" doc:id="17143a35-8be2-4355-8d38-511c95aa5018" message="Log----------- batch have started "/>
+	</flow>
+	<flow name="batchexcFlow1" doc:id="95c17d9a-9e16-4f76-b0aa-08a24b1f5930" >
+		<scheduler doc:name="Scheduler" doc:id="8b0e964f-de44-4f81-bc4a-e5455888427c" >
+			<scheduling-strategy >
+				<fixed-frequency />
+			</scheduling-strategy>
+		</scheduler>
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="1557c17b-a366-4e34-9e9c-a48581503f42" />
+		<ee:transform doc:name="Transform Message" doc:id="194ba604-3d67-4fe3-86be-85fae115fa2b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+
+---
+payload
+
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
